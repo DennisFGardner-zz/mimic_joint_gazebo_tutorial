@@ -189,19 +189,15 @@
       <parent link="body" />
       <child link="${lr_prefix}_bar" />
       <axis xyz="0 1 0" />
-      <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="10" />
+      <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
       <dynamics damping="0.02" friction="0.1" />
     </joint>
-  </xacro:macro>
-
-  <!-- right bar -->
-  <xacro:bar lr_prefix="right" lr_reflect="-1"/>  
-  <transmission name="right_trans">
+    <transmission name="${lr_prefix}_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="right_joint">
+    <joint name="${lr_prefix}_joint">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
-    <actuator name="right_motor">
+    <actuator name="${lr_prefix}_motor">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -209,11 +205,16 @@
   <gazebo reference="right_bar">
     <material>Gazebo/Green</material>
   </gazebo>
+  </xacro:macro>
+
+  <!-- right bar -->
+  <xacro:bar lr_prefix="right" lr_reflect="-1"/>  
+
 
 
 
 <!-- tip sensor -->
-<!-- <link name="tip">
+<link name="tip">
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
@@ -224,17 +225,16 @@
   <xacro:null_inertial/>
 </link>
 <joint name="tip_to_bar" type="revolute">
-  <parent link="right_bar"/>
+  <parent link="left_bar"/>
   <child link="tip"/>
   <origin xyz="0 0 ${body_length/2}" rpy="0 0 0"/>
   <axis xyz="0 1 0" />
-  <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1" />
-  <mimic joint="right_joint" multiplier="-1" offset="0" />
+  <limit lower="${-pi}" upper="${pi}" velocity="0.35" effort="1" />
+  <mimic joint="right_joint" multiplier="1" offset="0" />
   <dynamics damping="0.2" friction="0.1" />
 </joint>
 <gazebo reference="tip">        
    <sensor type="ray" name="tip_sensor">
-      <alwaysOn>true</alwaysOn>
       <update_rate>30</update_rate>
       <visualize>true</visualize>
       <topic>/tip_sensor/height_above_ground</topic>
@@ -268,16 +268,16 @@
          <fov>0.02</fov>
       </plugin>
    </sensor>            
-</gazebo> -->
+</gazebo>
 
   <!-- left bar -->
   <xacro:bar lr_prefix="left" lr_reflect="1"/>
-  <gazebo reference="left_finger">
+  <gazebo reference="left_bar">
     <material>Gazebo/Red</material>
   </gazebo>
 
   <xacro:mimic_joint_plugin_gazebo name_prefix="mimic_joint"
-    parent_joint="right_joint" mimic_joint="left_joint"
-    has_pid="true" multiplier="1.0" max_effort="1" />
+    parent_joint="right_joint" mimic_joint="tip_to_bar"
+    has_pid="false" multiplier="${-1.0}" max_effort="1" />
 
 </robot>
