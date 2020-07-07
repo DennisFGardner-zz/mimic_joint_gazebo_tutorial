@@ -157,20 +157,16 @@
     <material>Gazebo/Yellow</material>
   </gazebo>
 
+
   <!-- right finger -->
-
-
-
   <link name="right_finger">
     <visual>
-      <origin xyz="0 0.10 0" />
       <geometry>
         <box size="0.02 0.20 0.02" />
       </geometry>
       <xacro:insert_block name="material_green" />
     </visual>
     <collision>
-      <origin xyz="0 0.10 0" />
       <geometry>
         <box size="0.02 0.20 0.02" />
       </geometry>
@@ -182,17 +178,13 @@
     </xacro:solid_cuboid_inertial>
   </link>
   <joint name="right_finger_joint" type="revolute">
-    <origin xyz="0.0 -0.10 0.0" rpy="0 0 ${pi}" />
+    <origin xyz="0.0 -0.10 ${body_height/2}" rpy="0 0 ${pi}" />
     <parent link="body" />
     <child link="right_finger" />
     <axis xyz="1 0 0" />
     <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
     <dynamics damping="0.02" friction="0.0" />
   </joint>
-  <gazebo reference="right_finger">
-    <material>Gazebo/Green</material>
-  </gazebo>
-
   <transmission name="right_finger_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="right_finger_joint">
@@ -202,33 +194,20 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
+  <gazebo reference="right_finger">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
 
   <!-- left finger -->
-
-  <joint name="left_finger_joint" type="revolute">
-    <origin xyz="0.0 0.10 0.0" />
-    <parent link="body" />
-    <child link="left_finger" />
-    <axis xyz="1 0 0" />
-    <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
-    <mimic joint="right_finger_joint" multiplier="1" offset="0" />
-    <dynamics damping="0.02" friction="0.0" />
-  </joint>
-
-  <xacro:mimic_joint_plugin_gazebo name_prefix="left_finger_joint"
-    parent_joint="right_finger_joint" mimic_joint="left_finger_joint"
-    has_pid="true" multiplier="1.0" max_effort="10.0" />
-
   <link name="left_finger">
     <visual>
-      <origin xyz="0 0.10 0" />
       <geometry>
         <box size="0.02 0.20 0.02" />
       </geometry>
       <xacro:insert_block name="material_red" />
     </visual>
     <collision>
-      <origin xyz="0 0.10 0" />
       <geometry>
         <box size="0.02 0.20 0.02" />
       </geometry>
@@ -239,9 +218,23 @@
       <origin xyz="0 0 0"/>
     </xacro:solid_cuboid_inertial>
   </link>
+  <joint name="left_finger_joint" type="revolute">
+    <origin xyz="0.0 0.10 ${body_height/2}" />
+    <parent link="body" />
+    <child link="left_finger" />
+    <axis xyz="1 0 0" />
+    <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
+    <mimic joint="right_finger_joint" multiplier="1" offset="0" />
+    <dynamics damping="0.02" friction="0.0" />
+  </joint>
   <gazebo reference="left_finger">
     <material>Gazebo/Red</material>
   </gazebo>
+
+  <xacro:mimic_joint_plugin_gazebo name_prefix="left_finger_joint"
+    parent_joint="right_finger_joint" mimic_joint="left_finger_joint"
+    has_pid="true" multiplier="1.0" max_effort="10.0" />
+
 
   <!-- DO NOT add a transmission for the left finger joint. We want the left
        finger joint to be controlled by the mimic plugin. If we add a
