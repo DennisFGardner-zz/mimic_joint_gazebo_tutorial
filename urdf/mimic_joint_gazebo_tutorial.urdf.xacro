@@ -8,6 +8,14 @@
   <!-- width goes left to right (y-axis) -->
   <!-- height is up down (z-axis) --> 
 
+  <!-- reflection convention -->
+  <!-- 
+  front +1 
+  back  -1 
+  left  +1 
+  right -1 
+  -->
+
 
   <!-- - - - - - - - - - - Parameters - - - - - - - - - - -->
 
@@ -158,94 +166,57 @@
   </gazebo>
 
 
-  <!-- right finger -->
-  <link name="right_finger">
-    <visual>
-      <geometry>
-        <cylinder length="${bar_length}" radius="${bar_radius}"/>   
-      </geometry>
-      <xacro:insert_block name="material_green" />
-    </visual>
-    <collision>
-      <geometry>
-        <cylinder length="${bar_length}" radius="${bar_radius}"/>   
-      </geometry>
-    </collision>
-    <xacro:thick_walled_tube_inertial
-      inner_rad="0.0" outer_rad="${bar_radius}"
-      height="${bar_length}" mass="${bar_mass}"/>
-  </link>
-  <joint name="right_finger_joint" type="revolute">
-    <origin xyz="0.0 ${bar_length/2} ${body_height/2+bar_length/2}" rpy="0 0 ${pi}" />
-    <parent link="body" />
-    <child link="right_finger" />
-    <axis xyz="1 0 0" />
-    <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
-    <dynamics damping="0.02" friction="0.0" />
-  </joint>
-  <transmission name="right_finger_joint_trans">
+  <!-- bars -->
+  <xacro:macro name="bar" params="lr_prefix lr_reflect">
+    <link name="${lr_prefix}_bar">
+      <visual>
+        <origin xyz="0 0 ${bar_length/2}"/>
+        <geometry>
+          <cylinder length="${bar_length}" radius="${bar_radius}"/>   
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${bar_length}" radius="${bar_radius}"/>   
+        </geometry>
+      </collision>
+      <xacro:thick_walled_tube_inertial
+        inner_rad="0.0" outer_rad="${bar_radius}"
+        height="${bar_length}" mass="${bar_mass}"/>
+    </link>
+    <joint name="${lr_prefix}_joint" type="revolute">
+      <origin xyz="${body_length/2} ${lr_reflect*body_width/4} 0.0" rpy="0 ${pi/2} 0" />
+      <parent link="body" />
+      <child link="${lr_prefix}_bar" />
+      <axis xyz="0 1 0" />
+      <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
+      <dynamics damping="0.02" friction="0.0" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:bar lr_prefix="right" lr_reflect="-1"/>  
+  <transmission name="right_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="right_finger_joint">
+    <joint name="right_joint">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
-    <actuator name="right_finger_joint_motor">
+    <actuator name="right_motor">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  <gazebo reference="right_finger">
+
+  <xacro:bar lr_prefix="left" lr_reflect="1"/>
+
+  <gazebo reference="right_bar">
     <material>Gazebo/Green</material>
   </gazebo>
 
-
-  <!-- left finger -->
-  <link name="left_finger">
-    <visual>
-      <geometry>
-        <box size="0.02 0.20 0.02" />
-      </geometry>
-      <xacro:insert_block name="material_red" />
-    </visual>
-    <collision>
-      <geometry>
-        <box size="0.02 0.20 0.02" />
-      </geometry>
-    </collision>
-    <xacro:solid_cuboid_inertial
-        length="${0.02}" width="${0.20}"
-        height="${0.02}" mass="${0.1}">
-      <origin xyz="0 0 0"/>
-    </xacro:solid_cuboid_inertial>
-  </link>
-  <joint name="left_finger_joint" type="revolute">
-    <origin xyz="0.0 0.10 ${body_height/2}" />
-    <parent link="body" />
-    <child link="left_finger" />
-    <axis xyz="1 0 0" />
-    <limit lower="0" upper="${pi / 2}" velocity="0.7" effort="1000" />
-    <mimic joint="right_finger_joint" multiplier="1" offset="0" />
-    <dynamics damping="0.02" friction="0.0" />
-  </joint>
   <gazebo reference="left_finger">
     <material>Gazebo/Red</material>
   </gazebo>
 
-  <xacro:mimic_joint_plugin_gazebo name_prefix="left_finger_joint"
-    parent_joint="right_finger_joint" mimic_joint="left_finger_joint"
+  <xacro:mimic_joint_plugin_gazebo name_prefix="left_joint"
+    parent_joint="right_joint" mimic_joint="left_joint"
     has_pid="true" multiplier="1.0" max_effort="10.0" />
 
-
-  <!-- DO NOT add a transmission for the left finger joint. We want the left
-       finger joint to be controlled by the mimic plugin. If we add a
-       transmission, the ros_control plugin will try to control this joint. -->
-  <!--
-  <transmission name="left_finger_joint_trans">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="left_finger_joint">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="left_finger_joint_motor">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-  -->
 </robot>
