@@ -26,11 +26,14 @@
 
   <!-- Start the controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen"
-    args="joint_state_controller gripper_controller"/>
+    args="joint_state_controller somename"/>
 
   <!-- Robot state publisher -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
 
   <!-- Load teleop -->
-  <node name="rqt_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller" />
+  <!-- <node name="rqt_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller" /> -->
+
+  <!-- RVIZ -->
+  <node name="rviz" pkg="rviz" type="rviz" required="true" args="-d $(find mimic_joint_gazebo_tutorial)/launch/rviz_default.rviz"/>
 </launch>
