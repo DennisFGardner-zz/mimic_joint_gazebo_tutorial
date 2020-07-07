@@ -6,5 +6,5 @@
     <param name="use_gui" value="true" />
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-  <node name="rviz" pkg="rviz" type="rviz" required="true" />
+  <node name="rviz" pkg="rviz" type="rviz" required="true" args="-d $(find mimic_joint_gazebo_tutorial)/launch/rviz_default.rviz"/>
 </launch>
