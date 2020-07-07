@@ -166,7 +166,7 @@
   </gazebo>
 
 
-  <!-- bars -->
+  <!-- bar macro -->
   <xacro:macro name="bar" params="lr_prefix lr_reflect">
     <link name="${lr_prefix}_bar">
       <visual>
@@ -194,6 +194,7 @@
     </joint>
   </xacro:macro>
 
+  <!-- right bar -->
   <xacro:bar lr_prefix="right" lr_reflect="-1"/>  
   <transmission name="right_trans">
     <type>transmission_interface/SimpleTransmission</type>
@@ -205,18 +206,82 @@
     </actuator>
   </transmission>
 
-  <xacro:bar lr_prefix="left" lr_reflect="1"/>
-
   <gazebo reference="right_bar">
     <material>Gazebo/Green</material>
   </gazebo>
+
+
+
+<!-- tip sensor -->
+<link name="tip">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <sphere radius="0.01"/>
+    </geometry>
+    <xacro:insert_block name="material_yellow" />
+  </visual>
+  <xacro:null_inertial/>
+</link>
+<joint name="tip_to_bar" type="fixed">
+  <parent link="right_bar"/>
+  <child link="tip"/>
+  <origin xyz="0 0 ${body_length/2}" rpy="0 0 0"/>
+</joint>
+<gazebo reference="tip">        
+   <sensor type="ray" name="tip_sensor">
+      <alwaysOn>true</alwaysOn>
+      <update_rate>50</update_rate>
+      <visualize>true</visualize>
+      <topic>/tip_sensor/height_above_ground</topic>
+      <ray>
+         <scan>
+            <horizontal>
+               <samples>1</samples>
+               <resolution>1.0</resolution>
+               <min_angle>-0.01</min_angle>
+               <max_angle>0.01</max_angle>
+            </horizontal>
+            <vertical>
+               <samples>1</samples>
+               <resolution>1</resolution>
+               <min_angle>-0.01</min_angle>
+               <max_angle>0.01</max_angle>
+            </vertical>
+         </scan>
+         <range>
+            <min>0.01</min>
+            <max>3.75</max>
+            <resolution>0.02</resolution>
+         </range>
+      </ray>
+      <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+         <gaussianNoise>0.005</gaussianNoise>
+         <updateRate>5</updateRate>
+         <topicName>/radar_sim/height_above_ground</topicName>
+         <frameName>radar_panel_tip</frameName>
+         <radiation>infrared</radiation>
+         <fov>0.02</fov>
+      </plugin>
+   </sensor>            
+</gazebo>
+
+
+
+
+
+
+  <!-- left bar -->
+  <xacro:bar lr_prefix="left" lr_reflect="1"/>
+
+  <xacro:mimic_joint_plugin_gazebo name_prefix="left_joint"
+    parent_joint="right_joint" mimic_joint="left_joint"
+    has_pid="true" multiplier="1.0" max_effort="10.0" />
 
   <gazebo reference="left_finger">
     <material>Gazebo/Red</material>
   </gazebo>
 
-  <xacro:mimic_joint_plugin_gazebo name_prefix="left_joint"
-    parent_joint="right_joint" mimic_joint="left_joint"
-    has_pid="true" multiplier="1.0" max_effort="10.0" />
+
 
 </robot>
