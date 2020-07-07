@@ -162,23 +162,21 @@
   <link name="right_finger">
     <visual>
       <geometry>
-        <box size="0.02 0.20 0.02" />
+        <cylinder length="${bar_length}" radius="${bar_radius}"/>   
       </geometry>
       <xacro:insert_block name="material_green" />
     </visual>
     <collision>
       <geometry>
-        <box size="0.02 0.20 0.02" />
+        <cylinder length="${bar_length}" radius="${bar_radius}"/>   
       </geometry>
     </collision>
-    <xacro:solid_cuboid_inertial
-        length="${0.02}" width="${0.20}"
-        height="${0.02}" mass="${0.1}">
-      <origin xyz="0 0 0"/>
-    </xacro:solid_cuboid_inertial>
+    <xacro:thick_walled_tube_inertial
+      inner_rad="0.0" outer_rad="${bar_radius}"
+      height="${bar_length}" mass="${bar_mass}"/>
   </link>
   <joint name="right_finger_joint" type="revolute">
-    <origin xyz="0.0 -0.10 ${body_height/2}" rpy="0 0 ${pi}" />
+    <origin xyz="0.0 ${bar_length/2} ${body_height/2+bar_length/2}" rpy="0 0 ${pi}" />
     <parent link="body" />
     <child link="right_finger" />
     <axis xyz="1 0 0" />
