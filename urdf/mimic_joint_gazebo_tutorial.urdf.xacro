@@ -225,7 +225,7 @@
   <xacro:null_inertial/>
 </link>
 <joint name="tip_to_bar" type="revolute">
-  <parent link="left_bar"/>
+  <parent link="right_bar"/>
   <child link="tip"/>
   <origin xyz="0 0 ${body_length/2}" rpy="0 0 0"/>
   <axis xyz="0 1 0" />
