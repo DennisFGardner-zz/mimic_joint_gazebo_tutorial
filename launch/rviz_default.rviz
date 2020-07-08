@@ -76,12 +76,17 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        left_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         right_bar:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        tip:
+        right_tip:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -110,9 +115,11 @@ Visualization Manager:
           Value: true
         left_bar:
           Value: true
+        left_tip:
+          Value: true
         right_bar:
           Value: true
-        tip:
+        right_tip:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -123,11 +130,32 @@ Visualization Manager:
         base_link:
           body:
             left_bar:
-              {}
+              left_tip:
+                {}
             right_bar:
-              tip:
+              right_tip:
                 {}
       Update Interval: 0
+      Value: true
+    - Alpha: 0.5
+      Buffer Length: 1
+      Class: rviz/Range
+      Color: 255; 255; 255
+      Enabled: true
+      Name: Range
+      Queue Size: 100
+      Topic: /right_tip_sensor/height_above_ground
+      Unreliable: false
+      Value: true
+    - Alpha: 0.5
+      Buffer Length: 1
+      Class: rviz/Range
+      Color: 255; 255; 255
+      Enabled: true
+      Name: Range
+      Queue Size: 100
+      Topic: /left_tip_sensor/height_above_ground
+      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
