@@ -123,6 +123,10 @@
     parent_joint="right_joint" mimic_joint="right_tip_joint"
     has_pid="false" multiplier="${-1.0}" max_effort="1" />
 
+  <xacro:mimic_joint_plugin_gazebo name_prefix="mimic_joint"
+    parent_joint="left_joint" mimic_joint="left_tip_joint"
+    has_pid="false" multiplier="${-1.0}" max_effort="1" />
+
   <xacro:macro name="controller_plugin_gazebo" params="robot_namespace:=''">
     <gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -215,10 +219,6 @@
     </transmission>
   </xacro:macro>
 
-
-
-
-
   <!-- tip sensor -->
   <xacro:macro name="tip" params="lr_prefix">
     <link name="${lr_prefix}_tip">
@@ -242,6 +242,7 @@
     </joint>
   </xacro:macro>
 
+  <!-- tip sensor -->
   <xacro:macro name="tip_sensor" params="lr_prefix">
     <gazebo reference="${lr_prefix}_tip">        
       <sensor type="ray" name="${lr_prefix}_tip_sensor">
@@ -280,9 +281,6 @@
       </sensor>            
     </gazebo>
   </xacro:macro>
-
-
-
 
   <!-- right bar -->
   <xacro:bar lr_prefix="right" lr_reflect="-1"/>  
