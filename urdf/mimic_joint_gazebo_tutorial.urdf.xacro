@@ -98,6 +98,8 @@
     </material>
   </xacro:property>
 
+  <!-- - - - - - - - - - - gazebo plugins - - - - - - - - - - -->
+
   <xacro:macro name="mimic_joint_plugin_gazebo" params="name_prefix parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
     <gazebo>
       <plugin name="${name_prefix}mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
@@ -117,6 +119,10 @@
     </gazebo>
   </xacro:macro>
 
+  <xacro:mimic_joint_plugin_gazebo name_prefix="mimic_joint"
+    parent_joint="right_joint" mimic_joint="tip_to_bar"
+    has_pid="false" multiplier="${-1.0}" max_effort="1" />
+
   <xacro:macro name="controller_plugin_gazebo" params="robot_namespace:=''">
     <gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -127,13 +133,20 @@
       </plugin>
     </gazebo>
   </xacro:macro>
-
   <controller_plugin_gazebo />
+
+  <gazebo reference="right_bar">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+  <gazebo reference="left_bar">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
 
   <!-- - - - - - - - - - - base_link - - - - - - - - - - -->
 
   <link name="base_link" />
-
 
   <!-- body-->
   <link name="body">
@@ -165,7 +178,6 @@
     <material>Gazebo/Yellow</material>
   </gazebo>
 
-
   <!-- bar macro -->
   <xacro:macro name="bar" params="lr_prefix lr_reflect">
     <link name="${lr_prefix}_bar">
@@ -193,91 +205,84 @@
       <dynamics damping="0.02" friction="0.1" />
     </joint>
     <transmission name="${lr_prefix}_trans">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="${lr_prefix}_joint">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="${lr_prefix}_motor">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <gazebo reference="right_bar">
-    <material>Gazebo/Green</material>
-  </gazebo>
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${lr_prefix}_joint">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${lr_prefix}_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
   </xacro:macro>
+
 
   <!-- right bar -->
   <xacro:bar lr_prefix="right" lr_reflect="-1"/>  
 
-
-
-
-<!-- tip sensor -->
-<link name="tip">
-  <visual>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <geometry>
-      <sphere radius="0.01"/>
-    </geometry>
-    <xacro:insert_block name="material_yellow" />
-  </visual>
-  <xacro:null_inertial/>
-</link>
-<joint name="tip_to_bar" type="revolute">
-  <parent link="right_bar"/>
-  <child link="tip"/>
-  <origin xyz="0 0 ${body_length/2}" rpy="0 0 0"/>
-  <axis xyz="0 1 0" />
-  <limit lower="${-pi}" upper="${pi}" velocity="0.35" effort="1" />
-  <mimic joint="right_joint" multiplier="1" offset="0" />
-  <dynamics damping="0.2" friction="0.1" />
-</joint>
-<gazebo reference="tip">        
-   <sensor type="ray" name="tip_sensor">
-      <update_rate>30</update_rate>
-      <visualize>true</visualize>
-      <topic>/tip_sensor/height_above_ground</topic>
-      <ray>
-         <scan>
-            <horizontal>
-               <samples>1</samples>
-               <resolution>1.0</resolution>
-               <min_angle>-0.01</min_angle>
-               <max_angle>0.01</max_angle>
-            </horizontal>
-            <vertical>
-               <samples>1</samples>
-               <resolution>1</resolution>
-               <min_angle>-0.01</min_angle>
-               <max_angle>0.01</max_angle>
-            </vertical>
-         </scan>
-         <range>
-            <min>0.01</min>
-            <max>3.75</max>
-            <resolution>0.02</resolution>
-         </range>
-      </ray>
-      <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
-         <gaussianNoise>0.005</gaussianNoise>
-         <updateRate>5</updateRate>
-         <topicName>/tip_sensor/height_above_ground</topicName>
-         <frameName>tip</frameName>
-         <radiation>infrared</radiation>
-         <fov>0.02</fov>
-      </plugin>
-   </sensor>            
-</gazebo>
-
   <!-- left bar -->
   <xacro:bar lr_prefix="left" lr_reflect="1"/>
-  <gazebo reference="left_bar">
-    <material>Gazebo/Red</material>
+
+
+  <!-- tip sensor -->
+  <link name="tip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <xacro:insert_block name="material_yellow" />
+    </visual>
+    <xacro:null_inertial/>
+  </link>
+  <joint name="tip_to_bar" type="revolute">
+    <parent link="right_bar"/>
+    <child link="tip"/>
+    <origin xyz="0 0 ${body_length/2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0" />
+    <limit lower="${-pi}" upper="${pi}" velocity="0.35" effort="1" />
+    <mimic joint="right_joint" multiplier="1" offset="0" />
+    <dynamics damping="0.2" friction="0.1" />
+  </joint>
+  <gazebo reference="tip">        
+    <sensor type="ray" name="tip_sensor">
+        <update_rate>30</update_rate>
+        <visualize>true</visualize>
+        <topic>/tip_sensor/height_above_ground</topic>
+        <ray>
+          <scan>
+              <horizontal>
+                <samples>1</samples>
+                <resolution>1.0</resolution>
+                <min_angle>-0.01</min_angle>
+                <max_angle>0.01</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>1</samples>
+                <resolution>1</resolution>
+                <min_angle>-0.01</min_angle>
+                <max_angle>0.01</max_angle>
+              </vertical>
+          </scan>
+          <range>
+              <min>0.01</min>
+              <max>3.75</max>
+              <resolution>0.02</resolution>
+          </range>
+        </ray>
+      <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+        <gaussianNoise>0.005</gaussianNoise>
+        <updateRate>5</updateRate>
+        <topicName>/tip_sensor/height_above_ground</topicName>
+        <frameName>tip</frameName>
+        <radiation>infrared</radiation>
+        <fov>0.02</fov>
+      </plugin>
+    </sensor>            
   </gazebo>
 
-  <xacro:mimic_joint_plugin_gazebo name_prefix="mimic_joint"
-    parent_joint="right_joint" mimic_joint="tip_to_bar"
-    has_pid="false" multiplier="${-1.0}" max_effort="1" />
+
+
+
+
 
 </robot>
