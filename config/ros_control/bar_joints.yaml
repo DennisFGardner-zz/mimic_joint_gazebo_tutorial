@@ -1,5 +1,7 @@
 # Position Controllers ---------------------------------------
-somename:
+right_bar_ctrl:
   type: position_controllers/JointPositionController
   joint: right_joint
-
+left_bar_ctrl:
+  type: position_controllers/JointPositionController
+  joint: left_joint

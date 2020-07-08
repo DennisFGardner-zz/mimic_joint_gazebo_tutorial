@@ -22,11 +22,11 @@
 
   <!-- Load ros_control controller configurations -->
   <rosparam file="$(find mimic_joint_gazebo_tutorial)/config/ros_control/joint_state_controller.yaml" command="load" />
-  <rosparam file="$(find mimic_joint_gazebo_tutorial)/config/ros_control/joint_trajectory_controller.yaml" command="load" />
+  <rosparam file="$(find mimic_joint_gazebo_tutorial)/config/ros_control/bar_joints.yaml" command="load" />
 
   <!-- Start the controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen"
-    args="joint_state_controller somename"/>
+    args="joint_state_controller right_bar_ctrl left_bar_ctrl"/>
 
   <!-- Robot state publisher -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
