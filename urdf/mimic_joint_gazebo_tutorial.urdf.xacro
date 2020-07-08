@@ -291,7 +291,8 @@
 
   <!-- left bar -->
   <xacro:bar lr_prefix="left" lr_reflect="1"/>
-
+  <xacro:tip lr_prefix="left"/> 
+  <xacro:tip_sensor lr_prefix="left"/>
 
 
 </robot>
